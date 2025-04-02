@@ -1,0 +1,687 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "148eacf9-7f87-4958-acb0-26cad845cfee",
+   "metadata": {},
+   "source": [
+    "### Advanced Programming MidTerm Tutorial: Tables \n",
+    "#### Cereal Database\n",
+    "##### Prepared by Mehek K"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cbade7bf-c95f-48d9-9231-25ac6ba35d8d",
+   "metadata": {},
+   "source": [
+    "### Installing PyTables:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "6e154559-19d4-4a3a-8810-0a35d8e64481",
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: tables in /opt/anaconda3/lib/python3.12/site-packages (3.10.1)\n",
+      "Requirement already satisfied: numpy>=1.20.0 in /opt/anaconda3/lib/python3.12/site-packages (from tables) (1.26.4)\n",
+      "Requirement already satisfied: numexpr>=2.6.2 in /opt/anaconda3/lib/python3.12/site-packages (from tables) (2.8.7)\n",
+      "Requirement already satisfied: packaging in /opt/anaconda3/lib/python3.12/site-packages (from tables) (24.1)\n",
+      "Requirement already satisfied: py-cpuinfo in /opt/anaconda3/lib/python3.12/site-packages (from tables) (9.0.0)\n",
+      "Requirement already satisfied: typing-extensions>=4.4.0 in /opt/anaconda3/lib/python3.12/site-packages (from tables) (4.11.0)\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install tables"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "282fa398-7603-4068-886e-640bfe7a84c3",
+   "metadata": {},
+   "source": [
+    "#### Import all necessary libraries"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "5df32104-bc43-4f8f-860a-5c62ab9f6266",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import tables\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ea2eef2f-7e77-431a-98b5-c4597ab54ec3",
+   "metadata": {},
+   "source": [
+    "#### Load & Explore the Cereal Dataset "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "f4e888dd-a798-4e18-82dd-b2f94b2709f7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df = pd.read_csv(\"/Users/mehekkumar/Downloads/cereal.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "c3fc6b5f-90f5-46e6-81e0-be6f32f260cc",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                        name mfr type  calories  protein  fat  sodium  fiber  \\\n",
+      "0                  100% Bran   N    C        70        4    1     130   10.0   \n",
+      "1          100% Natural Bran   Q    C       120        3    5      15    2.0   \n",
+      "2                   All-Bran   K    C        70        4    1     260    9.0   \n",
+      "3  All-Bran with Extra Fiber   K    C        50        4    0     140   14.0   \n",
+      "4             Almond Delight   R    C       110        2    2     200    1.0   \n",
+      "\n",
+      "   carbo  sugars  potass  vitamins  shelf  weight  cups     rating  \n",
+      "0    5.0       6     280        25      3     1.0  0.33  68.402973  \n",
+      "1    8.0       8     135         0      3     1.0  1.00  33.983679  \n",
+      "2    7.0       5     320        25      3     1.0  0.33  59.425505  \n",
+      "3    8.0       0     330        25      3     1.0  0.50  93.704912  \n",
+      "4   14.0       8      -1        25      3     1.0  0.75  34.384843  \n"
+     ]
+    }
+   ],
+   "source": [
+    "print(df.head())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7159a433-e3dc-4f0f-b770-92f081087c93",
+   "metadata": {},
+   "source": [
+    "#### Define a class to describe the cereal data table:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 72,
+   "id": "8bd3e752-74a1-46cc-9f26-15e5fc9685cb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class Cereal(tables.IsDescription):\n",
+    "    name     = tables.StringCol(50)\n",
+    "    mfr      = tables.StringCol(1)\n",
+    "    type     = tables.StringCol(1)\n",
+    "    calories = tables.Int32Col()\n",
+    "    protein  = tables.Int32Col()\n",
+    "    fat      = tables.Int32Col()\n",
+    "    sodium   = tables.Int32Col()\n",
+    "    fiber    = tables.Float32Col()\n",
+    "    carbo    = tables.Float32Col()\n",
+    "    sugars   = tables.Int32Col()\n",
+    "    potass   = tables.Int32Col()\n",
+    "    vitamins = tables.Int32Col()\n",
+    "    shelf    = tables.Int32Col()\n",
+    "    weight   = tables.Float32Col()\n",
+    "    cups     = tables.Float32Col()\n",
+    "    rating   = tables.Float32Col()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9da0f680-66e3-43de-8d9a-8bdc4db264af",
+   "metadata": {},
+   "source": [
+    "#### Create a new HDF5 file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "id": "d0aa30ad-07b9-48e1-997d-c79e64a22370",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "h5file = tables.open_file(\"cereal_data.h5\", mode=\"a\", title=\"Cereal Dataset\")\n",
+    "table = h5file.create_table(\"/\", \"cereals\", Cereal, \"Cereal Nutrition Data\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a4c06a70-7f2f-45c8-a686-b4ba41dbce69",
+   "metadata": {},
+   "source": [
+    "#### Insert rows"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "id": "b025dbae-5ce7-47c9-9a7d-ec43f08b802a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "row = table.row\n",
+    "for _, record in df.iterrows():\n",
+    "    row['name']     = record['name'].encode('utf-8')\n",
+    "    row['mfr']      = record['mfr'].encode('utf-8')\n",
+    "    row['type']     = record['type'].encode('utf-8')\n",
+    "    row['calories'] = int(record['calories'])\n",
+    "    row['protein']  = int(record['protein'])\n",
+    "    row['fat']      = int(record['fat'])\n",
+    "    row['sodium']   = int(record['sodium'])\n",
+    "    row['fiber']    = float(record['fiber'])\n",
+    "    row['carbo']    = float(record['carbo'])\n",
+    "    row['sugars']   = int(record['sugars'])\n",
+    "    row['potass']   = int(record['potass'])\n",
+    "    row['vitamins'] = int(record['vitamins'])\n",
+    "    row['shelf']    = int(record['shelf'])\n",
+    "    row['weight']   = float(record['weight'])\n",
+    "    row['cups']     = float(record['cups'])\n",
+    "    row['rating']   = float(record['rating'])\n",
+    "    row.append()\n",
+    "\n",
+    "table.flush()\n",
+    "h5file.close()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8139f4b5-daca-4574-af51-2a91d30a8f0e",
+   "metadata": {},
+   "source": [
+    "#### Reading the Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 85,
+   "id": "e8ab99fd-031b-4b60-ac80-f371938e28b8",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100% Bran 70 calories\n",
+      "100% Natural Bran 120 calories\n",
+      "All-Bran 70 calories\n",
+      "All-Bran with Extra Fiber 50 calories\n",
+      "Almond Delight 110 calories\n",
+      "Apple Cinnamon Cheerios 110 calories\n",
+      "Apple Jacks 110 calories\n",
+      "Basic 4 130 calories\n",
+      "Bran Chex 90 calories\n",
+      "Bran Flakes 90 calories\n",
+      "Cap'n'Crunch 120 calories\n",
+      "Cheerios 110 calories\n",
+      "Cinnamon Toast Crunch 120 calories\n",
+      "Clusters 110 calories\n",
+      "Cocoa Puffs 110 calories\n",
+      "Corn Chex 110 calories\n",
+      "Corn Flakes 100 calories\n",
+      "Corn Pops 110 calories\n",
+      "Count Chocula 110 calories\n",
+      "Cracklin' Oat Bran 110 calories\n",
+      "Cream of Wheat (Quick) 100 calories\n",
+      "Crispix 110 calories\n",
+      "Crispy Wheat & Raisins 100 calories\n",
+      "Double Chex 100 calories\n",
+      "Froot Loops 110 calories\n",
+      "Frosted Flakes 110 calories\n",
+      "Frosted Mini-Wheats 100 calories\n",
+      "Fruit & Fibre Dates; Walnuts; and Oats 120 calories\n",
+      "Fruitful Bran 120 calories\n",
+      "Fruity Pebbles 110 calories\n",
+      "Golden Crisp 100 calories\n",
+      "Golden Grahams 110 calories\n",
+      "Grape Nuts Flakes 100 calories\n",
+      "Grape-Nuts 110 calories\n",
+      "Great Grains Pecan 120 calories\n",
+      "Honey Graham Ohs 120 calories\n",
+      "Honey Nut Cheerios 110 calories\n",
+      "Honey-comb 110 calories\n",
+      "Just Right Crunchy  Nuggets 110 calories\n",
+      "Just Right Fruit & Nut 140 calories\n",
+      "Kix 110 calories\n",
+      "Life 100 calories\n",
+      "Lucky Charms 110 calories\n",
+      "Maypo 100 calories\n",
+      "Muesli Raisins; Dates; & Almonds 150 calories\n",
+      "Muesli Raisins; Peaches; & Pecans 150 calories\n",
+      "Mueslix Crispy Blend 160 calories\n",
+      "Multi-Grain Cheerios 100 calories\n",
+      "Nut&Honey Crunch 120 calories\n",
+      "Nutri-Grain Almond-Raisin 140 calories\n",
+      "Nutri-grain Wheat 90 calories\n",
+      "Oatmeal Raisin Crisp 130 calories\n",
+      "Post Nat. Raisin Bran 120 calories\n",
+      "Product 19 100 calories\n",
+      "Puffed Rice 50 calories\n",
+      "Puffed Wheat 50 calories\n",
+      "Quaker Oat Squares 100 calories\n",
+      "Quaker Oatmeal 100 calories\n",
+      "Raisin Bran 120 calories\n",
+      "Raisin Nut Bran 100 calories\n",
+      "Raisin Squares 90 calories\n",
+      "Rice Chex 110 calories\n",
+      "Rice Krispies 110 calories\n",
+      "Shredded Wheat 80 calories\n",
+      "Shredded Wheat 'n'Bran 90 calories\n",
+      "Shredded Wheat spoon size 90 calories\n",
+      "Smacks 110 calories\n",
+      "Special K 110 calories\n",
+      "Strawberry Fruit Wheats 90 calories\n",
+      "Total Corn Flakes 110 calories\n",
+      "Total Raisin Bran 140 calories\n",
+      "Total Whole Grain 100 calories\n",
+      "Triples 110 calories\n",
+      "Trix 110 calories\n",
+      "Wheat Chex 100 calories\n",
+      "Wheaties 100 calories\n",
+      "Wheaties Honey Gold 110 calories\n"
+     ]
+    }
+   ],
+   "source": [
+    "with tables.open_file(\"cereal_data.h5\", mode=\"a\") as file:\n",
+    "    table = file.root.cereals\n",
+    "    for row in table.iterrows():\n",
+    "        print(row['name'].decode(), row['calories'], \"calories\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a2c32ad9-e46e-479a-90d4-9ceea83fdcc5",
+   "metadata": {},
+   "source": [
+    "#### Querying the Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7cf74b78-8e78-4bc3-a971-34bf42173081",
+   "metadata": {},
+   "source": [
+    "##### Let’s find cereals with more than 10g of sugar:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 91,
+   "id": "a43f2e8e-ee75-4b26-9b2a-5777272af791",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Apple Jacks - 14 g sugar\n",
+      "Cap'n'Crunch - 12 g sugar\n",
+      "Cocoa Puffs - 13 g sugar\n",
+      "Corn Pops - 12 g sugar\n",
+      "Count Chocula - 13 g sugar\n",
+      "Froot Loops - 13 g sugar\n",
+      "Frosted Flakes - 11 g sugar\n",
+      "Fruitful Bran - 12 g sugar\n",
+      "Fruity Pebbles - 12 g sugar\n",
+      "Golden Crisp - 15 g sugar\n",
+      "Honey Graham Ohs - 11 g sugar\n",
+      "Honey-comb - 11 g sugar\n",
+      "Lucky Charms - 12 g sugar\n",
+      "Muesli Raisins; Dates; & Almonds - 11 g sugar\n",
+      "Muesli Raisins; Peaches; & Pecans - 11 g sugar\n",
+      "Mueslix Crispy Blend - 13 g sugar\n",
+      "Post Nat. Raisin Bran - 14 g sugar\n",
+      "Raisin Bran - 12 g sugar\n",
+      "Smacks - 15 g sugar\n",
+      "Total Raisin Bran - 14 g sugar\n",
+      "Trix - 12 g sugar\n"
+     ]
+    }
+   ],
+   "source": [
+    "with tables.open_file(\"cereal_data.h5\", \"a\") as file:\n",
+    "    table = file.root.cereals\n",
+    "    for row in table.where(\"sugars > 10\"):\n",
+    "        print(row['name'].decode(), \"-\", row['sugars'], \"g sugar\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fc7a937f-86eb-43ab-b968-9a8fd0bc7f19",
+   "metadata": {},
+   "source": [
+    "Let’s find cereals with more than 5 g of fiber:¶"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 93,
+   "id": "02d6ecda-c820-4ee1-8cef-b4dcd9f69d5b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100% Bran - 10.0 g fiber\n",
+      "All-Bran - 9.0 g fiber\n",
+      "All-Bran with Extra Fiber - 14.0 g fiber\n",
+      "Bran Flakes - 5.0 g fiber\n",
+      "Fruit & Fibre Dates; Walnuts; and Oats - 5.0 g fiber\n",
+      "Fruitful Bran - 5.0 g fiber\n",
+      "Post Nat. Raisin Bran - 6.0 g fiber\n",
+      "Raisin Bran - 5.0 g fiber\n"
+     ]
+    }
+   ],
+   "source": [
+    "with tables.open_file(\"cereal_data.h5\", \"a\") as file:\n",
+    "    for row in file.root.cereals.where(\"fiber >= 5\"):\n",
+    "        print(row['name'].decode(), \"-\", row['fiber'], \"g fiber\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "959c8ad5-77c2-4a67-b41a-fc8bf13660d3",
+   "metadata": {},
+   "source": [
+    "##### Multicondition filter"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 97,
+   "id": "842ec269-4d99-40a7-b283-06498d96cfb4",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "100% Bran 70 10.0 68.40296936035156\n",
+      "All-Bran 70 9.0 59.425506591796875\n",
+      "All-Bran with Extra Fiber 50 14.0 93.70491027832031\n",
+      "Bran Chex 90 4.0 49.12025451660156\n",
+      "Bran Flakes 90 5.0 53.313812255859375\n",
+      "Shredded Wheat 'n'Bran 90 4.0 74.47294616699219\n"
+     ]
+    }
+   ],
+   "source": [
+    "with tables.open_file(\"cereal_data.h5\", mode=\"a\") as file:\n",
+    "    table = file.root.cereals\n",
+    "    for row in table.where(\"(calories < 100) & (fiber > 3.0)\"):\n",
+    "        print(row[\"name\"].decode(), row[\"calories\"], row[\"fiber\"], row[\"rating\"])\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ecffa748-cc73-48b6-a552-0f03750d0650",
+   "metadata": {},
+   "source": [
+    "#### Installing Tabulate"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 99,
+   "id": "c3c9d512-7416-4dae-af02-a577cf198cce",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: tabulate in /opt/anaconda3/lib/python3.12/site-packages (0.9.0)\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install tabulate"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 103,
+   "id": "f6e9b2fa-c80e-45ab-b22e-1bd803e7bb90",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+---------------------------+----------+-------+--------------------+\n",
+      "|           Name            | Calories | Fiber |       Rating       |\n",
+      "+---------------------------+----------+-------+--------------------+\n",
+      "|         100% Bran         |    70    | 10.0  | 68.40296936035156  |\n",
+      "|         All-Bran          |    70    |  9.0  | 59.425506591796875 |\n",
+      "| All-Bran with Extra Fiber |    50    | 14.0  | 93.70491027832031  |\n",
+      "|         Bran Chex         |    90    |  4.0  | 49.12025451660156  |\n",
+      "|        Bran Flakes        |    90    |  5.0  | 53.313812255859375 |\n",
+      "|  Shredded Wheat 'n'Bran   |    90    |  4.0  | 74.47294616699219  |\n",
+      "+---------------------------+----------+-------+--------------------+\n"
+     ]
+    }
+   ],
+   "source": [
+    "from tabulate import tabulate\n",
+    "\n",
+    "\n",
+    "data = []\n",
+    "with tables.open_file(\"cereal_data.h5\", \"a\") as file:\n",
+    "    table = file.root.cereals\n",
+    "    for row in table.where(\"(calories < 100) & (fiber > 3.0)\"):\n",
+    "        data.append([row[\"name\"].decode(), row[\"calories\"], row[\"fiber\"], row[\"rating\"]])\n",
+    "\n",
+    "\n",
+    "print(tabulate(data, headers=[\"Name\", \"Calories\", \"Fiber\", \"Rating\"], tablefmt=\"pretty\"))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "c3313628-cfc4-4c9f-9da6-4606ce43963c",
+   "metadata": {},
+   "source": [
+    "#### Compressing Data HDF5 File"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 106,
+   "id": "71a741d1-afc8-43a5-99fa-f75cd381a184",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "h5file.close()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 108,
+   "id": "0f160acf-4a13-42c6-87a1-b6ed634b4744",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "filters = tables.Filters(complevel=5, complib=\"zlib\")\n",
+    "\n",
+    "h5file = tables.open_file(\"compressed_cereal_data.h5\", mode=\"a\", title=\"Compressed Cereal Data\")\n",
+    "table = h5file.create_table(\"/\", \"cereals\", Cereal, \"Cereal Nutrition Table\", filters=filters)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5ff444cf-b671-4e07-8b1b-4807979285ed",
+   "metadata": {},
+   "source": [
+    "#### Indexing Columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 111,
+   "id": "c8234c42-b71f-4c10-b47d-db7ab9ee9d2c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Index created: True\n"
+     ]
+    }
+   ],
+   "source": [
+    "import tables\n",
+    "\n",
+    "h5file = tables.open_file(\"cereal_data.h5\", mode=\"a\")\n",
+    "\n",
+    "table = h5file.root.cereals\n",
+    "\n",
+    "table.cols.sugars.create_index()\n",
+    "\n",
+    "print(\"Index created:\", table.cols.sugars.is_indexed)\n",
+    "\n",
+    "h5file.close()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "21ad6cd0-4aa5-41de-aad1-2194de32726f",
+   "metadata": {},
+   "source": [
+    "#### Hierarchical Structure (Groups & Subgroups)¶\n",
+    "You can create folders (called groups) inside the HDF5 file. This helps organize data."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 114,
+   "id": "41b826e8-d577-4666-846b-89df38a67403",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "h5file = tables.open_file(\"cereal_data.h5\", mode=\"a\")\n",
+    "\n",
+    "group = h5file.create_group(\"/\", 'processed_data', 'Cleaned Cereal Data')\n",
+    "\n",
+    "table = h5file.create_table(group, 'clean_table', Cereal)\n",
+    "\n",
+    "row = table.row\n",
+    "row['name'] = 'Bran Flakes'\n",
+    "row['calories'] = 120\n",
+    "row['protein'] = 4\n",
+    "row['fat'] = 1\n",
+    "row['sugars'] = 5\n",
+    "row.append()\n",
+    "table.flush()\n",
+    "\n",
+    "h5file.close()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e62941be-5c9b-4403-9da2-df739cf9b662",
+   "metadata": {},
+   "source": [
+    "├── raw_data/\n",
+    "│   └── cereal_table\n",
+    "├── processed_data/\n",
+    "│   └── clean_table\n",
+    "└── logs/\n",
+    "    └── import_log"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bd32ee96-770b-42b1-9afd-7e56d8bca23b",
+   "metadata": {},
+   "source": [
+    "Show how HDF5 files can be organized like folders. This is great for separating raw vs cleaned data, or versions of data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b3bcb599-43f8-4edc-9c94-eb5dc7d337eb",
+   "metadata": {},
+   "source": [
+    "#### Append to Group data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 124,
+   "id": "683750c3-2154-48a8-856e-05b5f2e04371",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "h5file = tables.open_file(\"cereal_data.h5\", mode=\"a\")\n",
+    "\n",
+    "\n",
+    "table = h5file.root.processed_data.clean_table \n",
+    "\n",
+    "\n",
+    "row = table.row\n",
+    "row['name'] = \"New Cereal\"\n",
+    "row['calories'] = 100\n",
+    "row['protein'] = 3\n",
+    "row['fat'] = 2\n",
+    "row['sugars'] = 5\n",
+    "row.append()\n",
+    "\n",
+    "table.flush()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cc2a46d9-e218-43f2-a42a-e1affc91f120",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python [conda env:base] *",
+   "language": "python",
+   "name": "conda-base-py"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
